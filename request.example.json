@@ -1,0 +1,15 @@
+{
+  "input": "a small cabin beside a lake, landscape, no people",
+  "model": "nai-diffusion-3",
+  "action": "generate",
+  "parameters": {
+    "width": 512,
+    "height": 512,
+    "scale": 5,
+    "sampler": "k_euler_ancestral",
+    "steps": 28,
+    "n_samples": 1,
+    "seed": 123456789,
+    "negative_prompt": "low quality, blurry"
+  }
+}

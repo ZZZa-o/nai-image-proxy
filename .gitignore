@@ -1,0 +1,15 @@
+node_modules/
+.wrangler/
+.worker-build/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+request.json
+*.zip
+*.png
+*.webp
+*.headers
+response.*
+Thumbs.db
+.DS_Store

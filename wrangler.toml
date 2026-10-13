@@ -1,0 +1,25 @@
+name = "nai-image-proxy"
+main = "src/worker.mjs"
+compatibility_date = "2026-09-01"
+workers_dev = true
+send_metrics = false
+
+# Replace with a domain in your Cloudflare account, then uncomment.
+# [[routes]]
+# pattern = "nai.example.com"
+# custom_domain = true
+
+[vars]
+# Comma-separated browser origins, or * (Authorization is still required by NovelAI).
+ALLOWED_ORIGINS = "*"
+
+# suggest-tags carries prompt in the URL: disable invocation logs and traces too.
+[observability]
+enabled = false
+
+[observability.logs]
+enabled = false
+invocation_logs = false
+
+[observability.traces]
+enabled = false
