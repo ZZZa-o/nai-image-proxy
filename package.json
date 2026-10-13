@@ -2,7 +2,7 @@
   "name": "nai-image-proxy",
   "version": "1.0.0",
   "private": true,
-  "description": "Transparent pass-through proxy for the NovelAI image generation API, for SillyTavern image plugins.",
+  "description": "Pass-through proxy for the NovelAI image generation API, for SillyTavern image plugins.",
   "license": "MIT",
   "author": "ZZZa-o",
   "repository": {
@@ -17,14 +17,12 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "start": "node src/server.mjs",
-    "test": "node --test",
     "check:worker": "wrangler deploy --dry-run --outdir .worker-build"
   },
   "dependencies": {
     "express": "5.2.1"
   },
   "devDependencies": {
-    "miniflare": "5.20261006.0-alpha",
     "wrangler": "4.148.0"
   },
   "overrides": {

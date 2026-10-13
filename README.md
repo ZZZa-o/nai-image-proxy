@@ -55,7 +55,6 @@ SillyTavern 生图插件 → https://<你的地址> → https://image.novelai.ne
 
 ```sh
 npm ci
-npm test
 npm run check:worker
 npx wrangler login
 npm run deploy
@@ -64,7 +63,6 @@ npm run deploy
 | 命令 | 作用 |
 | --- | --- |
 | `npm ci` | 按 `package-lock.json` 安装依赖 |
-| `npm test` | 本地运行全部测试，不联网、不消耗额度 |
 | `npm run check:worker` | 只检查和打包，不发布 |
 | `npx wrangler login` | 在浏览器中登录 Cloudflare 账号 |
 | `npm run deploy` | 发布到 Cloudflare |
@@ -235,8 +233,29 @@ curl -i -X POST https://<你的地址>/ai/generate-image \
 
 ### Windows PowerShell 真实生图
 
-1. 将 `request.example.json` 复制为 `request.json`。示例使用 `nai-diffusion-3`；最好改用当前插件已能直连成功的完整 JSON，以匹配你使用的模型和参数。代理不会补齐或转换参数。
-2. 在本机终端输入 Token，避免直接写进命令历史、源文件或聊天。Token 会在当前进程内短暂以明文提供给 curl：
+先准备 `request.json`，内容用插件实际发送的生图参数：
+
+```json
+{
+  "input": "a small cabin beside a lake, landscape, no people",
+  "model": "nai-diffusion-3",
+  "action": "generate",
+  "parameters": {
+    "width": 512,
+    "height": 512,
+    "scale": 5,
+    "sampler": "k_euler_ancestral",
+    "steps": 28,
+    "n_samples": 1,
+    "seed": 123456789,
+    "negative_prompt": "low quality, blurry"
+  }
+}
+```
+
+示例使用 `nai-diffusion-3`，最好换成当前插件已能直连成功的完整 JSON，以匹配你使用的模型和参数。代理不会补齐或转换参数。
+
+在本机终端输入 Token，避免直接写进命令历史、源文件或聊天。Token 会在当前进程内短暂以明文提供给 curl：
 
 ```powershell
 $naiSecureToken = Read-Host 'NovelAI Token（不含 Bearer 前缀）' -AsSecureString
@@ -253,7 +272,7 @@ curl.exe --silent --show-error --max-time 600 `
 Get-Content -LiteralPath proxy.headers
 ```
 
-如果已有自己的 `request.json`，跳过第 1 步的复制，避免覆盖。检查 HTTP 状态与 `Content-Type`：官方文档中生成成功是 **201**，不是固定的 200。只有成功且类型为 ZIP 时才应当按 ZIP 解压；错误 JSON 也会保存到 `response.zip`，不要把文件存在当作成功。
+检查 HTTP 状态与 `Content-Type`：官方文档中生成成功是 **201**，不是固定的 200。只有成功且类型为 ZIP 时才应当按 ZIP 解压；错误 JSON 也会保存到 `response.zip`，不要把文件存在当作成功。
 
 可用 `tar -tf response.zip` 检查 ZIP 目录，或使用 Windows 压缩包工具打开。如果选择其他 `Accept`，上游可能返回 JSON，代理同样原样转发。
 
@@ -295,7 +314,6 @@ unset NAI_TOKEN
 - Workers Free 有每日请求数及 CPU 限制；等待上游网络不计入 CPU 时间。HTTP 请求在客户端保持连接时无固定总执行时长上限，但客户端、上游及平台其他网络超时仍然有效。
 - Render Free 在 15 分钟无入站流量后休眠，首次唤醒通常约一分钟，可能导致插件首次请求超时。Free 对带宽、实例时数及大量主动外连也有限制，持续生图中转应按实际情况评估实例计划。
 - 两种部署的出口都由平台决定。Cloudflare 边缘与 Render 数据中心 IP 均可能被 NovelAI 前置的 Cloudflare 挑战，这与代码无关。
-- `package.json` 的 `overrides` 把传递依赖 `sharp` 固定为 `0.35.5`。该依赖只由开发依赖 `miniflare` 引入，`npm ls sharp --omit=dev` 为空，不进入线上服务的依赖树，仅影响本地测试环境。升级 Wrangler/Miniflare 后应重新评估这条约束是否仍然必要。
 - 应用不记录敏感内容。Cloudflare/Render 自身可能仍产生平台访问日志；尤其标签建议将 `prompt` 放在 URL 中。不要对真实请求开启 Wrangler Tail、完整 URL 访问日志、Logpush、第三方请求追踪或抓包。若账号层面已启用这些设施，应关闭对应记录或脱敏 URL 查询串；应用代码无法保证托管商不保留基础设施元数据。
 - 不要给 API 配置“Cache Everything”等强制缓存规则。默认不使用 Worker Cache API，出站 `fetch` 使用 `no-store`；端到端上游响应头仍保留。
 

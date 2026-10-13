@@ -13,7 +13,7 @@ export function hopByHopHeaders(connection = '') {
     return new Set([
         'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
         'proxy-connection', 'te', 'trailer', 'transfer-encoding', 'upgrade',
-        ...connection.toLowerCase().split(',').map(value => value.trim()),
+        ...connection.toLowerCase().split(',').map(value => value.trim()).filter(Boolean),
     ]);
 }
 
